@@ -17,7 +17,22 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    try util.parseFileString(allocator, data);
+    var numberList = try util.parseFileString(allocator, data);
+
+    countDepthIncreases(numberList);
+}
+
+fn countDepthIncreases(depthsArrayList: std.ArrayList(u64)) void {
+
+    var depths = depthsArrayList.items;
+    std.debug.print("Depths list count  = {any}\n", .{depths.len});
+
+    var i: usize = 1;
+    while (i < depths.len) : (i += 1) {
+        if (depths[i] > depths[i-1]) {
+            std.debug.print("deeper {any}\n", .{depths[i]});
+        }
+    }
 }
 // Useful stdlib functions
 const tokenize = std.mem.tokenize;
