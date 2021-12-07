@@ -12,9 +12,13 @@ const gpa = util.gpa;
 const data = @embedFile("../data/day01.txt");
 
 pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
+    var allocator = &arena.allocator;
+
+    try util.parseFileString(allocator, data);
 }
-
 // Useful stdlib functions
 const tokenize = std.mem.tokenize;
 const split = std.mem.split;
