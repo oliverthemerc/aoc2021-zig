@@ -10,7 +10,23 @@ var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = &gpa_impl.allocator;
 
 // Add utility functions here
+pub fn parseFileString(allocator: *std.mem.Allocator, fileContents : []const u8) !void {
+    var numbers = std.ArrayList(u8).init(allocator);
 
+    for (fileContents) |character| {
+        if (character == '\n') {
+            var stringAsNumber = try std.fmt.parseInt(u64, numbers.items, 10);
+
+            std.debug.print("Hello, {any}!\n", .{stringAsNumber});
+            numbers.shrinkRetainingCapacity(0);
+            //numbers = std.ArrayList(u8).init(allocator);
+        } else if (character == '\r') {
+            continue;
+        } else {
+            try numbers.append(character);
+        }
+    }
+}
 
 // Useful stdlib functions
 const tokenize = std.mem.tokenize;
