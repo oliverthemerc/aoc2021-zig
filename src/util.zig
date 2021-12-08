@@ -1,4 +1,5 @@
 const std = @import("std");
+const mem = @import("std").mem;
 const Allocator = std.mem.Allocator;
 const List = std.ArrayList;
 const Map = std.AutoHashMap;
@@ -30,21 +31,59 @@ pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []cons
     return parsedNumbers;
 }
 
-pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList([]const u8) {
+const MoveAction = struct {
+    direction : u64,
+    length : u64,
+};
+
+pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(MoveAction) {
+    var lines = try readLinesFromFile(allocator, fileContents);
+    var actions = std.ArrayList(MoveAction).init(allocator);
+
+    std.debug.print("Lines Length = {any}\n", .{lines.items.len});
+
+    var directionStringBuilder = std.ArrayList(u8).init(allocator);
+    var lengthStringBuilder = std.ArrayList(u8).init(allocator);
+
+    for (lines.items) |line| {
+        var foundSplit = false;
+
+        //split and collect parts of line
+        for (line) |character| {
+            if (character == ' ') {
+                foundSplit = true;
+            } else {
+                if (foundSplit) {
+                    try lengthStringBuilder.append(character);
+                } else {
+                    try directionStringBuilder.append(character);
+                }
+            }
+
+            std.debug.print("Processed line  = {s}\n", .{line});
+            std.debug.print("Processed direction  = {s}\n", .{directionStringBuilder.items});
+            std.debug.print("Processed length  = {s}\n", .{lengthStringBuilder.items});
+        }
+
+        //turn action into enum
+        //turn numerals into number
+        directionStringBuilder.shrinkRetainingCapacity(0);
+        lengthStringBuilder.shrinkRetainingCapacity(0);
+    }
+
+    return actions;
+}
+
+pub fn readLinesFromFile(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList([]const u8) {
     var lineStringBuilder = std.ArrayList(u8).init(allocator);
     var allLines = std.ArrayList([]const u8).init(allocator);
 
     for (fileContents) |character| {
         if (character == '\n') {
-           // var stringAsNumber = try std.fmt.parseInt(u64, numberStringBuilder.items, 10);
-
-            std.debug.print("Found line  = {s}\n", .{lineStringBuilder.items});
-            const copiedLine = lineStringBuilder.items[0..lineStringBuilder.items.len];
-            std.debug.print("Found copied line  = {s}\n", .{copiedLine});
-
+            var copiedLine = try allocator.alloc(u8, lineStringBuilder.items.len);
+            std.mem.copy(u8, copiedLine[0..copiedLine.len], lineStringBuilder.items[0..lineStringBuilder.items.len]);
             try allLines.append(copiedLine);
 
-            // try parsedNumbers.append(stringAsNumber);
             lineStringBuilder.shrinkRetainingCapacity(0);
         } else if (character == '\r') {
             continue;

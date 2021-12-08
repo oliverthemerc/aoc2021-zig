@@ -17,9 +17,9 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    var numberList = try util.parseDay02FileString(allocator, data);
+    const numberList = try util.parseDay02FileString(allocator, data);
 
-    std.debug.print("Length  = {any}\n", .{numberList.items.len});
+    std.debug.print("Actions Length  = {any}\n", .{numberList.items.len});
 }
 
 // Useful stdlib functions
