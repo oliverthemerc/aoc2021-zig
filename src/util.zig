@@ -31,16 +31,20 @@ pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []cons
     return parsedNumbers;
 }
 
+const Direction = enum {
+    Forward,
+    Up,
+    Down,
+};
+
 const MoveAction = struct {
-    direction : u64,
+    direction : Direction,
     length : u64,
 };
 
 pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(MoveAction) {
     var lines = try readLinesFromFile(allocator, fileContents);
     var actions = std.ArrayList(MoveAction).init(allocator);
-
-    std.debug.print("Lines Length = {any}\n", .{lines.items.len});
 
     var directionStringBuilder = std.ArrayList(u8).init(allocator);
     var lengthStringBuilder = std.ArrayList(u8).init(allocator);
@@ -59,17 +63,32 @@ pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []cons
                     try directionStringBuilder.append(character);
                 }
             }
-
-            std.debug.print("Processed line  = {s}\n", .{line});
-            std.debug.print("Processed direction  = {s}\n", .{directionStringBuilder.items});
-            std.debug.print("Processed length  = {s}\n", .{lengthStringBuilder.items});
         }
 
+
         //turn action into enum
+        const foundDirection = switch (directionStringBuilder.items[0]) {
+            102 => Direction.Forward,
+            117 => Direction.Up,
+            100 => Direction.Down,
+            else => unreachable,
+        };
+
         //turn numerals into number
+        var lengthAsNumber = try std.fmt.parseInt(u64, lengthStringBuilder.items, 10);
+
+        try actions.append(MoveAction{
+            .direction = foundDirection,
+            .length = lengthAsNumber,
+        });
+
         directionStringBuilder.shrinkRetainingCapacity(0);
         lengthStringBuilder.shrinkRetainingCapacity(0);
     }
+
+    lines.clearAndFree();
+    directionStringBuilder.clearAndFree();
+    lengthStringBuilder.clearAndFree();
 
     return actions;
 }
