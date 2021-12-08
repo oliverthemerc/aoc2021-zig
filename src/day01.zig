@@ -17,7 +17,7 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    var numberList = try util.parseFileString(allocator, data);
+    var numberList = try util.parseDay01FileString(allocator, data);
 
     var totalIncreases = countDepthIncreases(numberList.items);
     std.debug.print("Increases  = {any}\n", .{totalIncreases});

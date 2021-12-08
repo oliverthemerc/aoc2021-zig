@@ -1,4 +1,5 @@
 const std = @import("std");
+const mem = @import("std").mem;
 const Allocator = std.mem.Allocator;
 const List = std.ArrayList;
 const Map = std.AutoHashMap;
@@ -10,7 +11,7 @@ var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = &gpa_impl.allocator;
 
 // Add utility functions here
-pub fn parseFileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(u64) {
+pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(u64) {
     var numberStringBuilder = std.ArrayList(u8).init(allocator);
     var parsedNumbers = std.ArrayList(u64).init(allocator);
 
@@ -28,6 +29,91 @@ pub fn parseFileString(allocator: *std.mem.Allocator, fileContents : []const u8)
     }
 
     return parsedNumbers;
+}
+
+pub const Direction = enum {
+    Forward,
+    Up,
+    Down,
+};
+
+pub const MoveAction = struct {
+    direction : Direction,
+    length : u64,
+};
+
+pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(MoveAction) {
+    var lines = try readLinesFromFile(allocator, fileContents);
+    var actions = std.ArrayList(MoveAction).init(allocator);
+
+    var directionStringBuilder = std.ArrayList(u8).init(allocator);
+    var lengthStringBuilder = std.ArrayList(u8).init(allocator);
+
+    for (lines.items) |line| {
+        var foundSplit = false;
+
+        //split and collect parts of line
+        for (line) |character| {
+            if (character == ' ') {
+                foundSplit = true;
+            } else {
+                if (foundSplit) {
+                    try lengthStringBuilder.append(character);
+                } else {
+                    try directionStringBuilder.append(character);
+                }
+            }
+        }
+
+
+        //turn action into enum
+        const foundDirection = switch (directionStringBuilder.items[0]) {
+            102 => Direction.Forward,
+            117 => Direction.Up,
+            100 => Direction.Down,
+            else => unreachable,
+        };
+
+        //turn numerals into number
+        var lengthAsNumber = try std.fmt.parseInt(u64, lengthStringBuilder.items, 10);
+
+        try actions.append(MoveAction{
+            .direction = foundDirection,
+            .length = lengthAsNumber,
+        });
+
+        directionStringBuilder.shrinkRetainingCapacity(0);
+        lengthStringBuilder.shrinkRetainingCapacity(0);
+    }
+
+    lines.clearAndFree();
+    directionStringBuilder.clearAndFree();
+    lengthStringBuilder.clearAndFree();
+
+    return actions;
+}
+
+pub fn readLinesFromFile(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList([]const u8) {
+    var lineStringBuilder = std.ArrayList(u8).init(allocator);
+    var allLines = std.ArrayList([]const u8).init(allocator);
+
+    for (fileContents) |character| {
+        if (character == '\n') {
+            var copiedLine = try allocator.alloc(u8, lineStringBuilder.items.len);
+            std.mem.copy(u8, copiedLine[0..copiedLine.len], lineStringBuilder.items[0..lineStringBuilder.items.len]);
+            try allLines.append(copiedLine);
+
+            lineStringBuilder.shrinkRetainingCapacity(0);
+        } else if (character == '\r') {
+            continue;
+        } else {
+            try lineStringBuilder.append(character);
+        }
+    }
+
+    lineStringBuilder.clearAndFree();
+
+    return allLines;
 }
 
 // Useful stdlib functions
