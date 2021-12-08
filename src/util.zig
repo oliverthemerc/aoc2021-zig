@@ -111,6 +111,8 @@ pub fn readLinesFromFile(allocator: *std.mem.Allocator, fileContents : []const u
         }
     }
 
+    lineStringBuilder.clearAndFree();
+
     return allLines;
 }
 
