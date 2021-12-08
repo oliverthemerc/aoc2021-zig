@@ -30,6 +30,32 @@ pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []cons
     return parsedNumbers;
 }
 
+pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList([]const u8) {
+    var lineStringBuilder = std.ArrayList(u8).init(allocator);
+    var allLines = std.ArrayList([]const u8).init(allocator);
+
+    for (fileContents) |character| {
+        if (character == '\n') {
+           // var stringAsNumber = try std.fmt.parseInt(u64, numberStringBuilder.items, 10);
+
+            std.debug.print("Found line  = {s}\n", .{lineStringBuilder.items});
+            const copiedLine = lineStringBuilder.items[0..lineStringBuilder.items.len];
+            std.debug.print("Found copied line  = {s}\n", .{copiedLine});
+
+            try allLines.append(copiedLine);
+
+            // try parsedNumbers.append(stringAsNumber);
+            lineStringBuilder.shrinkRetainingCapacity(0);
+        } else if (character == '\r') {
+            continue;
+        } else {
+            try lineStringBuilder.append(character);
+        }
+    }
+
+    return allLines;
+}
+
 // Useful stdlib functions
 const tokenize = std.mem.tokenize;
 const split = std.mem.split;

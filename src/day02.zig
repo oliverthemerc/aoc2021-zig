@@ -12,7 +12,14 @@ const gpa = util.gpa;
 const data = @embedFile("../data/day02.txt");
 
 pub fn main() !void {
-    
+      var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var allocator = &arena.allocator;
+
+    var numberList = try util.parseDay02FileString(allocator, data);
+
+    std.debug.print("Length  = {any}\n", .{numberList.items.len});
 }
 
 // Useful stdlib functions
