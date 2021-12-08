@@ -12,7 +12,7 @@ const gpa = util.gpa;
 const data = @embedFile("../data/day02.txt");
 
 pub fn main() !void {
-      var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
 
     var allocator = &arena.allocator;
