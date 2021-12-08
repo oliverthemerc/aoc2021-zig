@@ -10,7 +10,7 @@ var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = &gpa_impl.allocator;
 
 // Add utility functions here
-pub fn parseFileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(u64) {
+pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(u64) {
     var numberStringBuilder = std.ArrayList(u8).init(allocator);
     var parsedNumbers = std.ArrayList(u64).init(allocator);
 
