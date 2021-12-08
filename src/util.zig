@@ -31,13 +31,13 @@ pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []cons
     return parsedNumbers;
 }
 
-const Direction = enum {
+pub const Direction = enum {
     Forward,
     Up,
     Down,
 };
 
-const MoveAction = struct {
+pub const MoveAction = struct {
     direction : Direction,
     length : u64,
 };

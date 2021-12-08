@@ -17,9 +17,57 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    const numberList = try util.parseDay02FileString(allocator, data);
+    const actionList = try util.parseDay02FileString(allocator, data);
 
-    std.debug.print("Actions Length  = {any}\n", .{numberList.items.len});
+    const part1Answer = doPart1(actionList.items);
+    std.debug.print("Part 1 answer  = {any}\n", .{part1Answer});
+
+    const part2Answer = doPart2(actionList.items);
+    std.debug.print("Part 2 answer  = {any}\n", .{part2Answer});
+}
+
+fn doPart1(actions : []util.MoveAction) u64 {
+    var depth : u64 = 0;
+    var distance : u64 = 0;
+
+    var i : usize = 0;
+    while (i < actions.len) : (i += 1) {
+        const currentAction = actions[i];
+        switch (currentAction.direction) {
+            util.Direction.Forward => distance += currentAction.length,
+            util.Direction.Down => depth += currentAction.length,
+            util.Direction.Up => depth -= currentAction.length,
+        }
+    }
+
+    std.debug.print("Function Depth  = {any}\n", .{depth});
+    std.debug.print("Function Distance  = {any}\n", .{distance});
+
+    return depth * distance;
+}
+
+fn doPart2(actions : []util.MoveAction) u64 {
+    var depth : u64 = 0;
+    var distance : u64 = 0;
+    var aim : u64 = 0;
+
+    var i : usize = 0;
+    while (i < actions.len) : (i += 1) {
+        const currentAction = actions[i];
+        switch (currentAction.direction) {
+            util.Direction.Forward => {
+                distance += currentAction.length;
+                depth += aim * currentAction.length;
+            },
+            util.Direction.Down => aim += currentAction.length,
+            util.Direction.Up => aim -= currentAction.length,
+        }
+    }
+
+    std.debug.print("Function Depth  = {any}\n", .{depth});
+    std.debug.print("Function Distance  = {any}\n", .{distance});
+
+    return depth * distance;
 }
 
 // Useful stdlib functions
