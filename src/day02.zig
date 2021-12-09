@@ -17,7 +17,7 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    const actionList = try util.parseDay02FileString(allocator, data);
+    const actionList = try util.parseDay02FileString(allocator, util.ReadType.ArrayList, data);
 
     const part1Answer = doPart1(actionList);
     std.debug.print("Part 1 answer  = {any}\n", .{part1Answer});

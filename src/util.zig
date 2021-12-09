@@ -10,8 +10,25 @@ const Str = []const u8;
 var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = &gpa_impl.allocator;
 
+pub const ReadType = enum {
+    ArrayList,
+    Slice,
+};
+
+pub const ReadFileError = error{
+    TypeNotImplemented,
+} ;
+
 // Add utility functions here
-pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []const u8) ![]u64 {
+pub fn parseDay01FileString(allocator: *std.mem.Allocator, readType : ReadType, fileContents : []const u8) ![]u64 {
+    if (readType == ReadType.ArrayList) {
+        return parseDay01FileArrayList(allocator, fileContents);    
+    }
+
+    return ReadFileError.TypeNotImplemented;
+}
+
+fn parseDay01FileArrayList(allocator: *std.mem.Allocator, fileContents : []const u8) ![]u64 {
     var numberStringBuilder = std.ArrayList(u8).init(allocator);
     var parsedNumbers = std.ArrayList(u64).init(allocator);
 
@@ -42,7 +59,11 @@ pub const MoveAction = struct {
     length : u64,
 };
 
-pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) ![]MoveAction {
+pub fn parseDay02FileString(allocator: *std.mem.Allocator,  readType : ReadType, fileContents : []const u8) ![]MoveAction {
+    if (readType != ReadType.ArrayList) {
+        return ReadFileError.TypeNotImplemented;
+    }
+
     var lines = try readLinesFromFile(allocator, fileContents);
     var actions = std.ArrayList(MoveAction).init(allocator);
 
