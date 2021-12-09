@@ -78,7 +78,7 @@ fn parseDay01FileLibrary(allocator: *std.mem.Allocator, fileContents : []const u
     while (true) {
         if (splitLines.next()) |line| {
             if (line.len == 0) {
-                break;
+                continue;
             }
             var stringAsNumber = try std.fmt.parseInt(u64, line, 10);
             try parsedNumbers.append(stringAsNumber);
