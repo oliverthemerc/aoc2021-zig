@@ -11,7 +11,7 @@ var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = &gpa_impl.allocator;
 
 // Add utility functions here
-pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(u64) {
+pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []const u8) ![]u64 {
     var numberStringBuilder = std.ArrayList(u8).init(allocator);
     var parsedNumbers = std.ArrayList(u64).init(allocator);
 
@@ -28,7 +28,7 @@ pub fn parseDay01FileString(allocator: *std.mem.Allocator, fileContents : []cons
         }
     }
 
-    return parsedNumbers;
+    return parsedNumbers.items;
 }
 
 pub const Direction = enum {
@@ -42,7 +42,7 @@ pub const MoveAction = struct {
     length : u64,
 };
 
-pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList(MoveAction) {
+pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []const u8) ![]MoveAction {
     var lines = try readLinesFromFile(allocator, fileContents);
     var actions = std.ArrayList(MoveAction).init(allocator);
 
@@ -90,7 +90,7 @@ pub fn parseDay02FileString(allocator: *std.mem.Allocator, fileContents : []cons
     directionStringBuilder.clearAndFree();
     lengthStringBuilder.clearAndFree();
 
-    return actions;
+    return actions.items;
 }
 
 pub fn readLinesFromFile(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList([]const u8) {

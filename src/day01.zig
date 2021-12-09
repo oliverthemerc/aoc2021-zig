@@ -19,10 +19,10 @@ pub fn main() !void {
 
     var numberList = try util.parseDay01FileString(allocator, data);
 
-    var totalIncreases = countDepthIncreases(numberList.items);
+    var totalIncreases = countDepthIncreases(numberList);
     std.debug.print("Increases  = {any}\n", .{totalIncreases});
 
-    var totalSlidingIncreases = countSlidingDepthIncreases(numberList.items);
+    var totalSlidingIncreases = countSlidingDepthIncreases(numberList);
     std.debug.print("Sliding increases  = {any}\n", .{totalSlidingIncreases});
 }
 

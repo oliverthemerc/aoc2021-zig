@@ -19,10 +19,10 @@ pub fn main() !void {
 
     const actionList = try util.parseDay02FileString(allocator, data);
 
-    const part1Answer = doPart1(actionList.items);
+    const part1Answer = doPart1(actionList);
     std.debug.print("Part 1 answer  = {any}\n", .{part1Answer});
 
-    const part2Answer = doPart2(actionList.items);
+    const part2Answer = doPart2(actionList);
     std.debug.print("Part 2 answer  = {any}\n", .{part2Answer});
 }
 
