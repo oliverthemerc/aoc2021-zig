@@ -18,6 +18,7 @@ pub const ReadType = enum {
 
 pub const ReadFileError = error{
     TypeNotImplemented,
+    InvalidInput,
 } ;
 
 // Add utility functions here
@@ -107,76 +108,52 @@ pub fn parseDay02FileString(allocator: *std.mem.Allocator,  readType : ReadType,
     }
 
     var lines = try readLinesFromFile(allocator, fileContents);
-    var actions = std.ArrayList(MoveAction).init(allocator);
+    var actions = try allocator.alloc(MoveAction, lines.len);
 
-    var directionStringBuilder = std.ArrayList(u8).init(allocator);
-    var lengthStringBuilder = std.ArrayList(u8).init(allocator);
+    var actionIndex : usize = 0;
+    for (lines) |line| {
+        const nullable_index = std.mem.indexOfScalar(u8, line, ' ');
+        if (nullable_index) |index| {
+            const foundDirection = switch (line[0]) {
+                102 => Direction.Forward,
+                117 => Direction.Up,
+                100 => Direction.Down,
+                else => unreachable,
+            };
 
-    for (lines.items) |line| {
-        var foundSplit = false;
+            var lengthAsNumber = try std.fmt.parseInt(u64, line[index+1..], 10);
 
-        //split and collect parts of line
-        for (line) |character| {
-            if (character == ' ') {
-                foundSplit = true;
-            } else {
-                if (foundSplit) {
-                    try lengthStringBuilder.append(character);
-                } else {
-                    try directionStringBuilder.append(character);
-                }
-            }
+            actions[actionIndex] = MoveAction{
+                .direction = foundDirection,
+                .length = lengthAsNumber,
+            };
+            actionIndex += 1;
+        } else {
+            return ReadFileError.InvalidInput;
         }
-
-
-        //turn action into enum
-        const foundDirection = switch (directionStringBuilder.items[0]) {
-            102 => Direction.Forward,
-            117 => Direction.Up,
-            100 => Direction.Down,
-            else => unreachable,
-        };
-
-        //turn numerals into number
-        var lengthAsNumber = try std.fmt.parseInt(u64, lengthStringBuilder.items, 10);
-
-        try actions.append(MoveAction{
-            .direction = foundDirection,
-            .length = lengthAsNumber,
-        });
-
-        directionStringBuilder.shrinkRetainingCapacity(0);
-        lengthStringBuilder.shrinkRetainingCapacity(0);
     }
 
-    lines.clearAndFree();
-    directionStringBuilder.clearAndFree();
-    lengthStringBuilder.clearAndFree();
-
-    return actions.items;
+    return actions;
 }
 
-pub fn readLinesFromFile(allocator: *std.mem.Allocator, fileContents : []const u8) !std.ArrayList([]const u8) {
-    var lineStringBuilder = std.ArrayList(u8).init(allocator);
+pub fn readLinesFromFile(allocator: *std.mem.Allocator, fileContents : []const u8) ![][]const u8 {
     var allLines = std.ArrayList([]const u8).init(allocator);
 
-    for (fileContents) |character| {
-        if (character == '\n') {
-            var copiedLine = try allocator.alloc(u8, lineStringBuilder.items.len);
-            std.mem.copy(u8, copiedLine[0..copiedLine.len], lineStringBuilder.items[0..lineStringBuilder.items.len]);
-            try allLines.append(copiedLine);
+    var splitLines = split(u8, fileContents, "\r\n");
 
-            lineStringBuilder.shrinkRetainingCapacity(0);
-        } else if (character == '\r') {
-            continue;
+    while (true) {
+        if (splitLines.next()) |line| {
+            if (line.len == 0) {
+                continue;
+            }
+            try allLines.append(line);
+
         } else {
-            try lineStringBuilder.append(character);
+            break;
         }
     }
 
-    lineStringBuilder.clearAndFree();
-
-    return allLines;
+    return allLines.items;
 }
 
 // Useful stdlib functions
