@@ -17,13 +17,33 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    var numberList = try util.parseDay01FileString(allocator, data);
+    var numberListFromArrayList = try util.parseDay01FileString(allocator, util.ReadType.ArrayList, data);
+    var numberListFromSlice = try util.parseDay01FileString(allocator, util.ReadType.Slice, data);
+    var numberListFromLibrary = try util.parseDay01FileString(allocator, util.ReadType.Library, data);
+    std.debug.print("Slice Len  = {any}\n", .{numberListFromSlice.len});
+    std.debug.print("Library Len  = {any}\n", .{numberListFromLibrary.len});
 
-    var totalIncreases = countDepthIncreases(numberList.items);
-    std.debug.print("Increases  = {any}\n", .{totalIncreases});
 
-    var totalSlidingIncreases = countSlidingDepthIncreases(numberList.items);
-    std.debug.print("Sliding increases  = {any}\n", .{totalSlidingIncreases});
+    var totalIncreasesFromList = countDepthIncreases(numberListFromArrayList);
+    std.debug.print("Increases list  = {any}\n", .{totalIncreasesFromList});
+
+    var totalIncreasesFromSlice = countDepthIncreases(numberListFromSlice);
+    std.debug.print("Increases slice = {any}\n", .{totalIncreasesFromSlice});
+
+    var totalIncreasesFromLibrary = countDepthIncreases(numberListFromLibrary);
+    std.debug.print("Increases Library = {any}\n", .{totalIncreasesFromLibrary});
+
+    std.debug.print("Increases are same {b}\n", .{totalIncreasesFromList==totalIncreasesFromSlice});
+    std.debug.print("Increases are same {b}\n", .{totalIncreasesFromList==totalIncreasesFromLibrary});
+
+
+    var totalSlidingIncreasesList = countSlidingDepthIncreases(numberListFromArrayList);
+    std.debug.print("Sliding increases list = {any}\n", .{totalSlidingIncreasesList});
+
+    var totalSlidingIncreasesSlice = countSlidingDepthIncreases(numberListFromSlice);
+    std.debug.print("Sliding increases slice = {any}\n", .{totalSlidingIncreasesSlice});
+
+    std.debug.print("Sliding increases are same {b}\n", .{totalSlidingIncreasesList==totalSlidingIncreasesSlice});
 }
 
 fn countDepthIncreases(depths: []u64) u64 {
