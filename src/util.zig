@@ -23,6 +23,8 @@ pub const ReadFileError = error{
 pub fn parseDay01FileString(allocator: *std.mem.Allocator, readType : ReadType, fileContents : []const u8) ![]u64 {
     if (readType == ReadType.ArrayList) {
         return parseDay01FileArrayList(allocator, fileContents);    
+    } else if (readType == ReadType.Slice) {
+        return parseDay01FileSlice(allocator, fileContents);
     }
 
     return ReadFileError.TypeNotImplemented;
@@ -42,6 +44,23 @@ fn parseDay01FileArrayList(allocator: *std.mem.Allocator, fileContents : []const
             continue;
         } else {
             try numberStringBuilder.append(character);
+        }
+    }
+
+    return parsedNumbers.items;
+}
+
+fn parseDay01FileSlice(allocator: *std.mem.Allocator, fileContents : []const u8) ![]u64 {
+    var parsedNumbers = std.ArrayList(u64).init(allocator);
+
+    var i : usize = 0;
+    var lineStart: usize = 0;
+    while (i < fileContents.len) : (i += 1) {
+        if (fileContents[i] == '\n') {
+            var stringAsNumber = try std.fmt.parseInt(u64, fileContents[lineStart..i-1], 10);
+
+            try parsedNumbers.append(stringAsNumber);
+            lineStart = i+1;
         }
     }
 

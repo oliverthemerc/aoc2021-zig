@@ -17,13 +17,25 @@ pub fn main() !void {
 
     var allocator = &arena.allocator;
 
-    var numberList = try util.parseDay01FileString(allocator, util.ReadType.ArrayList, data);
+    var numberListFromArrayList = try util.parseDay01FileString(allocator, util.ReadType.ArrayList, data);
+    var numberListFromSlice = try util.parseDay01FileString(allocator, util.ReadType.Slice, data);
 
-    var totalIncreases = countDepthIncreases(numberList);
-    std.debug.print("Increases  = {any}\n", .{totalIncreases});
+    var totalIncreasesFromList = countDepthIncreases(numberListFromArrayList);
+    std.debug.print("Increases list  = {any}\n", .{totalIncreasesFromList});
 
-    var totalSlidingIncreases = countSlidingDepthIncreases(numberList);
-    std.debug.print("Sliding increases  = {any}\n", .{totalSlidingIncreases});
+    var totalIncreasesFromSlice = countDepthIncreases(numberListFromSlice);
+    std.debug.print("Increases slice = {any}\n", .{totalIncreasesFromSlice});
+
+    std.debug.print("Increases are same {b}\n", .{totalIncreasesFromList==totalIncreasesFromSlice});
+
+
+    var totalSlidingIncreasesList = countSlidingDepthIncreases(numberListFromArrayList);
+    std.debug.print("Sliding increases list = {any}\n", .{totalSlidingIncreasesList});
+
+    var totalSlidingIncreasesSlice = countSlidingDepthIncreases(numberListFromSlice);
+    std.debug.print("Sliding increases slice = {any}\n", .{totalSlidingIncreasesSlice});
+
+    std.debug.print("Sliding increases are same {b}\n", .{totalSlidingIncreasesList==totalSlidingIncreasesSlice});
 }
 
 fn countDepthIncreases(depths: []u64) u64 {
