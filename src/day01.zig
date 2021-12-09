@@ -19,6 +19,10 @@ pub fn main() !void {
 
     var numberListFromArrayList = try util.parseDay01FileString(allocator, util.ReadType.ArrayList, data);
     var numberListFromSlice = try util.parseDay01FileString(allocator, util.ReadType.Slice, data);
+    var numberListFromLibrary = try util.parseDay01FileString(allocator, util.ReadType.Library, data);
+    std.debug.print("Slice Len  = {any}\n", .{numberListFromSlice.len});
+    std.debug.print("Library Len  = {any}\n", .{numberListFromLibrary.len});
+
 
     var totalIncreasesFromList = countDepthIncreases(numberListFromArrayList);
     std.debug.print("Increases list  = {any}\n", .{totalIncreasesFromList});
@@ -26,7 +30,11 @@ pub fn main() !void {
     var totalIncreasesFromSlice = countDepthIncreases(numberListFromSlice);
     std.debug.print("Increases slice = {any}\n", .{totalIncreasesFromSlice});
 
+    var totalIncreasesFromLibrary = countDepthIncreases(numberListFromLibrary);
+    std.debug.print("Increases Library = {any}\n", .{totalIncreasesFromLibrary});
+
     std.debug.print("Increases are same {b}\n", .{totalIncreasesFromList==totalIncreasesFromSlice});
+    std.debug.print("Increases are same {b}\n", .{totalIncreasesFromList==totalIncreasesFromLibrary});
 
 
     var totalSlidingIncreasesList = countSlidingDepthIncreases(numberListFromArrayList);

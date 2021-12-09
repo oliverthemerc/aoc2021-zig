@@ -13,6 +13,7 @@ pub const gpa = &gpa_impl.allocator;
 pub const ReadType = enum {
     ArrayList,
     Slice,
+    Library,
 };
 
 pub const ReadFileError = error{
@@ -25,6 +26,8 @@ pub fn parseDay01FileString(allocator: *std.mem.Allocator, readType : ReadType, 
         return parseDay01FileArrayList(allocator, fileContents);    
     } else if (readType == ReadType.Slice) {
         return parseDay01FileSlice(allocator, fileContents);
+    } else if  (readType == ReadType.Library) {
+        return parseDay01FileLibrary(allocator, fileContents);
     }
 
     return ReadFileError.TypeNotImplemented;
@@ -61,6 +64,26 @@ fn parseDay01FileSlice(allocator: *std.mem.Allocator, fileContents : []const u8)
 
             try parsedNumbers.append(stringAsNumber);
             lineStart = i+1;
+        }
+    }
+
+    return parsedNumbers.items;
+}
+
+fn parseDay01FileLibrary(allocator: *std.mem.Allocator, fileContents : []const u8) ![]u64 {
+    var parsedNumbers = std.ArrayList(u64).init(allocator);
+
+    var splitLines = split(u8, fileContents, "\r\n");
+
+    while (true) {
+        if (splitLines.next()) |line| {
+            if (line.len == 0) {
+                break;
+            }
+            var stringAsNumber = try std.fmt.parseInt(u64, line, 10);
+            try parsedNumbers.append(stringAsNumber);
+        } else {
+            break;
         }
     }
 
